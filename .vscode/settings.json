@@ -1,0 +1,48 @@
+{
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    },
+  
+    // Prettier come formatter predefinito
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  
+    // File supportati da Prettier
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[vue]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+  
+    // Blade
+    "[blade]": {
+      "editor.defaultFormatter": "shufo.vscode-blade-formatter"
+    },
+  
+    // Intelephense
+    "intelephense.environment.phpVersion": "8.3",
+    "intelephense.files.exclude": [
+      "**/vendor/**",
+      "**/.vscode/**",
+      "**/node_modules/**"
+    ],
+  
+    // Vue Volar settings
+    "vue.features.scriptSetup": true,
+    "typescript.tsdk": "node_modules/typescript/lib",
+  
+    // Tailwind (se lo userai)
+    "tailwindCSS.experimental.classRegex": [
+      ["class\\s*=\\s*\"([^\"]*)", 1],
+      ["class:\\s*'([^']*)", 1],
+      ["class:\\s*\"([^\"]*)", 1]
+    ]
+  }
+  

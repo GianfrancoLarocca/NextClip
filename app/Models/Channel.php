@@ -28,6 +28,11 @@ class Channel extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function videos()
+    {
+        return $this->hasMany(Video::class);
+    }
+
     /**
      * Generazione automatica dello slug al momento della creazione o aggiornamento
      */

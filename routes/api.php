@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ChannelController;
+use App\Http\Controllers\Api\ChannelVideoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -40,6 +41,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // CRUD canali
     Route::apiResource('channels', ChannelController::class)->scoped([
         'channel' => 'slug',
+    ]);
+
+    // Video annidati dentro canali
+    Route::apiResource('channels.videos', ChannelVideoController::class)->scoped([
+        'channel' => 'slug',
+        'video' => 'slug',
     ]);
     
 });

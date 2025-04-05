@@ -34,12 +34,30 @@ class Channel extends Model
     protected static function booted()
     {
         static::creating(function ($channel) {
-            $channel->slug = Str::slug($channel->name);
-        });
+            $baseSlug = Str::slug($channel->name);
+            $slug = $baseSlug;
+            $counter = 1;
+        
+            // Controlla se esiste già uno slug identico
+            while (Channel::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . $counter++;
+            }
+        
+            $channel->slug = $slug;
+        });        
 
         static::updating(function ($channel) {
             if ($channel->isDirty('name')) {
-                $channel->slug = Str::slug($channel->name);
+                $baseSlug = Str::slug($channel->name);
+                $slug = $baseSlug;
+                $counter = 1;
+        
+                // Ignora il canale corrente per evitare conflitto con se stesso
+                while (Channel::where('slug', $slug)->where('id', '!=', $channel->id)->exists()) {
+                    $slug = $baseSlug . '-' . $counter++;
+                }
+        
+                $channel->slug = $slug;
             }
         });
     }

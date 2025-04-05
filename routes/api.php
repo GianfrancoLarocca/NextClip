@@ -38,5 +38,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // CRUD canali
-    Route::apiResource('channels', ChannelController::class);
+    Route::apiResource('channels', ChannelController::class)->scoped([
+        'channel' => 'slug',
+    ]);
+    
 });

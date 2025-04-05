@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ChannelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -29,7 +30,13 @@ Route::post('/token', function (Request $request) {
     ]);
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// 🔐 Rotte protette da token
+Route::middleware('auth:sanctum')->group(function () {
+    // Info utente
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 
+    // CRUD canali
+    Route::apiResource('channels', ChannelController::class);
+});

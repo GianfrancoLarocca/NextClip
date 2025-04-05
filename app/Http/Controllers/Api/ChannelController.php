@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Controllers\Controller;
 use App\Models\Channel;
 use Illuminate\Http\Request;
@@ -9,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class ChannelController extends Controller
 {
+
+    use AuthorizesRequests;
+
     /**
      * Mostra tutti i canali dell'utente autenticato
      */
@@ -47,7 +51,7 @@ class ChannelController extends Controller
      */
     public function update(Request $request, Channel $channel)
     {
-        $this->authorize('update', $channel); // TODO: aggiungere le policy
+        $this->authorize('update', $channel);
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',

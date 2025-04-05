@@ -7,9 +7,13 @@ use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ChannelVideoController extends Controller
 {
+
+    use AuthorizesRequests;
+
     /**
      * Elenca tutti i video di un canale
      */
@@ -23,7 +27,7 @@ class ChannelVideoController extends Controller
      */
     public function store(Request $request, Channel $channel)
     {
-        $this->authorize('update', $channel); // TODO: solo il proprietario può caricare
+        $this->authorize('update', $channel);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',

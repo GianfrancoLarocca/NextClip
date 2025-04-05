@@ -20,7 +20,8 @@ Route::post('/token', function (Request $request) {
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
-    $token = $user->createToken($request->device_name)->plainTextToken;
+    // $token = $user->createToken($request->device_name)->plainTextToken;
+    $token = $user->createToken($request->device_name, ['*'], now()->addDays(7))->plainTextToken;
 
     return response()->json([
         'token' => $token,

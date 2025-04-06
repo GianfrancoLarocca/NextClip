@@ -55,3 +55,4 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('/videos', [VideoController::class, 'index']);
+Route::get('/videos/{video:slug}', [VideoController::class, 'show']);

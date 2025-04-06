@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\VideoResource;
 use App\Models\Video;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class VideoController extends Controller
@@ -35,8 +36,17 @@ class VideoController extends Controller
             return response()->json(['message' => 'Video not available'], Response::HTTP_FORBIDDEN);
         }
 
-        // Incrementa il numero di visualizzazioni
-        $video->increment('views');
+        $user = request()->user();
+        $viewerId = $user ? 'user_' . $user->id : 'ip_' . request()->ip();
+        $cacheKey = "video_viewed_{$video->id}_{$viewerId}";
+
+        // Se non è stato visto di recente, incrementa views
+        if (!Cache::has($cacheKey)) {
+            $video->increment('views');
+
+            // Salva nel cache per 30 minuti
+            Cache::put($cacheKey, true, now()->addMinutes(5));
+        }
 
         $video->load('channel'); // Include dati del canale
 

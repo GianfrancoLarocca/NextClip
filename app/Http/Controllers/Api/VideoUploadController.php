@@ -9,23 +9,39 @@ use Illuminate\Support\Facades\Storage;
 class VideoUploadController extends Controller
 {
     /**
-     * Carica un file video nel filesystem
+     * Carica un file video e una thumbnail opzionale
      */
     public function store(Request $request)
     {
-        //  Autenticazione già gestita via middleware
-
-        //  Validazione del file video
         $request->validate([
-            'video' => 'required|file|mimetypes:video/mp4,video/avi,video/mpeg|max:51200', // max 50MB
+            'video' => 'required|file|mimetypes:video/mp4,video/avi,video/mpeg|max:51200',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
         ]);
 
-        // Salva il file nel disco pubblico
-        $path = $request->file('video')->store('videos', 'public');
+        $videoFile = $request->file('video');
+
+        // Verifica se il file è stato caricato correttamente
+        if (! $videoFile->isValid()) {
+            return response()->json([
+                'message' => 'File video non valido.',
+                'error' => $videoFile->getErrorMessage(),
+            ], 422);
+        }
+
+        // Salva il video
+        $videoPath = $videoFile->store('videos', 'public');
+
+        // Salva la thumbnail, se presente
+        $thumbnailPath = null;
+        if ($request->hasFile('thumbnail')) {
+            $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
+        }
 
         return response()->json([
-            'path' => $path,
-            'url' => Storage::disk('public')->url($path),
+            'video_path' => $videoPath,
+            'video_url' => Storage::disk('public')->url($videoPath),
+            'thumbnail_path' => $thumbnailPath,
+            'thumbnail_url' => $thumbnailPath ? Storage::disk('public')->url($thumbnailPath) : null,
         ]);
     }
 }

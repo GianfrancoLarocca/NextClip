@@ -31,7 +31,7 @@ Route::post('/token', function (Request $request) {
     ]);
 });
 
-// 🔐 Rotte protette da token
+// Rotte protette da token
 Route::middleware('auth:sanctum')->group(function () {
     // Info utente
     Route::get('/user', function (Request $request) {

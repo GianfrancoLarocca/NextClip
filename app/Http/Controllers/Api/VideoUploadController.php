@@ -17,9 +17,12 @@ class VideoUploadController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'visibility' => 'required|in:public,private,unlisted',
             'video' => 'required|file|mimetypes:video/mp4,video/avi,video/mpeg|max:51200',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
-        ]);
+        ]);        
 
         $user = $request->user();
         $channel = $user->channels()->firstOrFail(); // 🎯 assumiamo che l'utente abbia almeno un canale
@@ -34,21 +37,20 @@ class VideoUploadController extends Controller
 
         // Crea il record nel database
         $video = $channel->videos()->create([
-            'title' => pathinfo($videoPath, PATHINFO_FILENAME),
-            'description' => null,
-            'slug' => Str::slug(pathinfo($videoPath, PATHINFO_FILENAME)) . '-' . uniqid(),
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'slug' => Str::slug($request->input('title')) . '-' . uniqid(),
             'video_path' => $videoPath,
             'thumbnail_path' => $thumbnailPath,
-            'visibility' => 'private',
+            'visibility' => $request->input('visibility', 'private'),
             'duration' => null,
             'published_at' => now(),
             'views' => 0,
-        ]);        
+        ]);          
 
         return response()->json([
             'message' => 'Video caricato con successo.',
             'video' => $video,
         ], 201);
     }
-
 }

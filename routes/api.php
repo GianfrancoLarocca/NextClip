@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\ChannelVideoController;
+use App\Http\Controllers\Api\VideoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -52,3 +53,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/videos/upload', [\App\Http\Controllers\Api\VideoUploadController::class, 'store']);
     
 });
+
+Route::get('/videos', [VideoController::class, 'index']);

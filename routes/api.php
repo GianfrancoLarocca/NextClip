@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\ChannelVideoController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\VideoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,10 @@ Route::middleware('auth:sanctum')->group(function () {
     ]);
 
     Route::post('/videos/upload', [\App\Http\Controllers\Api\VideoUploadController::class, 'store']);
+
+    Route::get('/videos/{video:slug}/comments', [CommentController::class, 'index']);
+    Route::post('/videos/{video:slug}/comments', [CommentController::class, 'store']);
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
     
 });
 

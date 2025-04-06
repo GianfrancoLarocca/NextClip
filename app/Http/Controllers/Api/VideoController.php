@@ -48,7 +48,7 @@ class VideoController extends Controller
             Cache::put($cacheKey, true, now()->addMinutes(5));
         }
 
-        $video->load('channel'); // Include dati del canale
+        $video->load('channel', 'likes'); // Include dati del canale
 
         // return response()->json($video);
         return new VideoResource($video);

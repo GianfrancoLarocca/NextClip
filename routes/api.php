@@ -60,7 +60,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/videos/{video:slug}/like', [LikeController::class, 'toggle']);
     
+    Route::get('/videos', [VideoController::class, 'index']);
+    Route::get('/videos/{video:slug}', [VideoController::class, 'show']);
 });
-
-Route::get('/videos', [VideoController::class, 'index']);
-Route::get('/videos/{video:slug}', [VideoController::class, 'show']);

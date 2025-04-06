@@ -4,17 +4,18 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Storage;
 
 class VideoResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray($request)
+    public function toArray(Request $request): array
     {
+        $user = $request->user();
+
+        \Log::debug('Utente autenticato in VideoResource', [
+            'auth_user_id' => $user?->id,
+            'like_ids' => $this->likes->pluck('id'),
+        ]);        
+
         return [
             'id' => $this->id,
             'title' => $this->title,
@@ -24,12 +25,17 @@ class VideoResource extends JsonResource
             'views' => $this->views,
             'duration' => $this->duration,
             'published_at' => $this->published_at,
-            'video_url' => Storage::disk('public')->url($this->video_path),
-            'thumbnail_url' => $this->thumbnail_path
-                ? Storage::disk('public')->url($this->thumbnail_path)
-                : null,
-            'channel' => new ChannelResource($this->whenLoaded('channel')),
+            'video_url' => asset('storage/' . $this->video_path),
+            'thumbnail_url' => $this->thumbnail_path ? asset('storage/' . $this->thumbnail_path) : null,
+            'channel' => [
+                'id' => $this->channel->id,
+                'name' => $this->channel->name,
+                'slug' => $this->channel->slug,
+                'avatar' => $this->channel->avatar,
+                'banner' => $this->channel->banner,
+            ],
+            'liked' => $user ? $this->likes->contains('id', $user->id) : false,
+            'likes_count' => $this->likes->count(),
         ];
     }
-
 }

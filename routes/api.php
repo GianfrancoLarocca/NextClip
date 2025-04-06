@@ -48,5 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'channel' => 'slug',
         'video' => 'slug',
     ]);
+
+    Route::post('/videos/upload', [\App\Http\Controllers\Api\VideoUploadController::class, 'store']);
     
 });

@@ -35,6 +35,9 @@ class VideoController extends Controller
             return response()->json(['message' => 'Video not available'], Response::HTTP_FORBIDDEN);
         }
 
+        // Incrementa il numero di visualizzazioni
+        $video->increment('views');
+
         $video->load('channel'); // Include dati del canale
 
         // return response()->json($video);

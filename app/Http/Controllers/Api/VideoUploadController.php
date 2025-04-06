@@ -36,6 +36,15 @@ class VideoUploadController extends Controller
             $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
         }
 
+        // Calcola la durata del video (in secondi)
+        $ffmpegOutput = null;
+        $videoFullPath = Storage::disk('public')->path($videoPath);
+
+        $escapedPath = escapeshellarg($videoFullPath);
+        exec("ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $escapedPath", $ffmpegOutput);
+
+        $duration = isset($ffmpegOutput[0]) ? (int) round(floatval($ffmpegOutput[0])) : null;
+
         // Crea il record nel database
         $video = $channel->videos()->create([
             'title' => $request->input('title'),
@@ -44,15 +53,10 @@ class VideoUploadController extends Controller
             'video_path' => $videoPath,
             'thumbnail_path' => $thumbnailPath,
             'visibility' => $request->input('visibility', 'private'),
-            'duration' => null,
+            'duration' => $duration,
             'published_at' => now(),
             'views' => 0,
         ]);          
-
-        // return response()->json([
-        //     'message' => 'Video caricato con successo.',
-        //     'video' => $video,
-        // ], 201);
 
         return (new VideoResource($video->load('channel')))
         ->additional(['message' => 'Video caricato con successo.']);

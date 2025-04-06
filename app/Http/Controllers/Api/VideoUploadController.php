@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\VideoResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Video;
@@ -25,7 +26,7 @@ class VideoUploadController extends Controller
         ]);        
 
         $user = $request->user();
-        $channel = $user->channels()->firstOrFail(); // 🎯 assumiamo che l'utente abbia almeno un canale
+        $channel = $user->channels()->firstOrFail(); // assumiamo che l'utente abbia almeno un canale
 
         // Salva i file
         $videoPath = $request->file('video')->store('videos', 'public');
@@ -48,9 +49,12 @@ class VideoUploadController extends Controller
             'views' => 0,
         ]);          
 
-        return response()->json([
-            'message' => 'Video caricato con successo.',
-            'video' => $video,
-        ], 201);
+        // return response()->json([
+        //     'message' => 'Video caricato con successo.',
+        //     'video' => $video,
+        // ], 201);
+
+        return (new VideoResource($video->load('channel')))
+        ->additional(['message' => 'Video caricato con successo.']);
     }
 }

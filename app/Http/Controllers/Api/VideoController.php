@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\VideoResource;
 use App\Models\Video;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,7 +19,13 @@ class VideoController extends Controller
             ->orderByDesc('published_at')
             ->paginate(30);
 
-        return response()->json($videos);
+        // return response()->json($videos);
+        return VideoResource::collection(
+            Video::where('visibility', 'public')
+                ->with('channel')
+                ->latest()
+                ->paginate(120)
+        );        
     }
 
     public function show(Video $video)
@@ -30,6 +37,7 @@ class VideoController extends Controller
 
         $video->load('channel'); // Include dati del canale
 
-        return response()->json($video);
+        // return response()->json($video);
+        return new VideoResource($video);
     }
 }

@@ -36,6 +36,11 @@ class Video extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function likes()
+    {
+        return $this->belongsToMany(User::class, 'video_user_likes')->withTimestamps();
+    }
+
     /**
      * Genera uno slug unico in automatico
      */

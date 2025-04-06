@@ -56,4 +56,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function likedVideos()
+    {
+        return $this->belongsToMany(Video::class, 'video_user_likes')->withTimestamps();
+    }
 }

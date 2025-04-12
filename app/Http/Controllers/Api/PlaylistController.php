@@ -10,30 +10,31 @@ use Illuminate\Support\Facades\Auth;
 class PlaylistController extends Controller
 {
     /**
-     * Restituisce tutte le playlist dell'utente autenticato.
+     * Elenco delle playlist dell'utente autenticato
      */
     public function index()
     {
-        return Auth::user()->playlists()->latest()->get();
+        return Playlist::where('user_id', Auth::id())->get();
     }
 
     /**
-     * Crea una nuova playlist per l'utente autenticato.
+     * Crea una nuova playlist
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'is_public' => 'required|boolean',
         ]);
 
-        $playlist = Auth::user()->playlists()->create($data);
+        $playlist = Auth::user()->playlists()->create($validated);
 
         return response()->json($playlist, 201);
     }
 
     /**
-     * Restituisce una singola playlist.
+     * Mostra una playlist specifica
      */
     public function show(Playlist $playlist)
     {
@@ -43,24 +44,25 @@ class PlaylistController extends Controller
     }
 
     /**
-     * Aggiorna una playlist.
+     * Aggiorna una playlist
      */
     public function update(Request $request, Playlist $playlist)
     {
         $this->authorize('update', $playlist);
 
-        $data = $request->validate([
-            'name' => 'sometimes|string|max:255',
+        $validated = $request->validate([
+            'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
+            'is_public' => 'required|boolean',
         ]);
 
-        $playlist->update($data);
+        $playlist->update($validated);
 
         return response()->json($playlist);
     }
 
     /**
-     * Elimina una playlist.
+     * Elimina una playlist
      */
     public function destroy(Playlist $playlist)
     {

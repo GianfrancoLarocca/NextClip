@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ChannelVideoController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\PlaylistController;
+use App\Http\Controllers\Api\PlaylistVideoController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\VideoController;
 use Illuminate\Http\Request;
@@ -84,8 +85,8 @@ Route::middleware('auth:sanctum')->group(function () {
         'playlist' => 'slug',
     ]);    
 
-    Route::get('/playlists/{playlist}/videos', [\App\Http\Controllers\Api\PlaylistVideoController::class, 'index']);
-    Route::post('/playlists/{playlist}/videos/{video}', [\App\Http\Controllers\Api\PlaylistVideoController::class, 'store']);
-    Route::delete('/playlists/{playlist}/videos/{video}', [\App\Http\Controllers\Api\PlaylistVideoController::class, 'destroy']);
+    Route::get('/playlists/{playlist}/videos', [PlaylistVideoController::class, 'index']);
+    Route::post('/playlists/{playlist}/videos/{video}', [PlaylistVideoController::class, 'store']);
+    Route::delete('/playlists/{playlist}/videos/{video}', [PlaylistVideoController::class, 'destroy']);
     
 });

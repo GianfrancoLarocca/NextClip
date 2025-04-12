@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PlaylistVideoController;
 use App\Http\Controllers\Api\PublicPlaylistController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\VideoController;
+use App\Http\Controllers\Api\VideoHistoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -89,6 +90,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/playlists/{playlist}/videos', [PlaylistVideoController::class, 'index']);
     Route::post('/playlists/{playlist}/videos/{video}', [PlaylistVideoController::class, 'store']);
     Route::delete('/playlists/{playlist}/videos/{video}', [PlaylistVideoController::class, 'destroy']);
+
+    Route::get('/history', [VideoHistoryController::class, 'index']);
+    Route::post('/history/{video:slug}', [VideoHistoryController::class, 'store']);
+    Route::delete('/history/{video:slug}', [VideoHistoryController::class, 'destroy']);
     
 });
 

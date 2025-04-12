@@ -62,4 +62,16 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('/videos', [VideoController::class, 'index']);
     Route::get('/videos/{video:slug}', [VideoController::class, 'show']);
+
+    Route::get('/notifications', function () {
+        return request()->user()->unreadNotifications()->paginate(20);
+    });
+
+    Route::post('/notifications/{id}/read', function ($id) {
+        $notification = request()->user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+    
+        return response()->json(['message' => 'Notifica segnata come letta.']);
+    });    
+    
 });

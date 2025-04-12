@@ -61,4 +61,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Video::class, 'video_user_likes')->withTimestamps();
     }
+
+    public function subscribedChannels()
+    {
+        return $this->belongsToMany(Channel::class, 'channel_user_subscriptions')->withTimestamps();
+    }
 }

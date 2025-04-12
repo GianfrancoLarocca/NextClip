@@ -33,6 +33,11 @@ class Channel extends Model
         return $this->hasMany(Video::class);
     }
 
+    public function subscribers()
+    {
+        return $this->belongsToMany(User::class, 'channel_user_subscriptions')->withTimestamps();
+    }
+
     /**
      * Generazione automatica dello slug al momento della creazione o aggiornamento
      */

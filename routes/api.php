@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\PlaylistController;
 use App\Http\Controllers\Api\PlaylistVideoController;
+use App\Http\Controllers\Api\PublicPlaylistController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\VideoController;
 use Illuminate\Http\Request;
@@ -90,3 +91,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/playlists/{playlist}/videos/{video}', [PlaylistVideoController::class, 'destroy']);
     
 });
+
+Route::get('/playlists', [PublicPlaylistController::class, 'index']);
+Route::get('/playlists/{playlist}', [PublicPlaylistController::class, 'show']);

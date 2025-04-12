@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\ChannelVideoController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\PlaylistController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\VideoController;
 use Illuminate\Http\Request;
@@ -78,5 +79,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Iscrizione/disiscrizione ai canali
     Route::post('/channels/{channel:slug}/subscribe', [SubscriptionController::class, 'subscribe']);
     Route::post('/channels/{channel:slug}/unsubscribe', [SubscriptionController::class, 'unsubscribe']);
+
+    Route::apiResource('playlists', PlaylistController::class)->scoped([
+        'playlist' => 'slug',
+    ]);    
     
 });

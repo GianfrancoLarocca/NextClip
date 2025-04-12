@@ -9,6 +9,8 @@ use App\Policies\ChannelPolicy;
 use App\Policies\CommentPolicy;
 use App\Policies\VideoPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use App\Models\Playlist;
+use App\Policies\PlaylistPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -26,7 +28,8 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Channel::class => ChannelPolicy::class,
         Video::class => VideoPolicy::class,
-        Comment::class => CommentPolicy::class
+        Comment::class => CommentPolicy::class,
+        Playlist::class => PlaylistPolicy::class,
     ];
 
     /**

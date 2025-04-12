@@ -14,13 +14,18 @@ class SubscriptionController extends Controller
     {
         $user = Auth::user();
 
+        // Evita iscrizione al proprio canale
+        if ($channel->user_id === $user->id) {
+            return response()->json(['message' => 'Non puoi iscriverti al tuo canale.'], 403);
+        }
+
         // Evita doppie iscrizioni
         if (! $channel->subscribers()->where('user_id', $user->id)->exists()) {
             $channel->subscribers()->attach($user->id);
             $channel->user->notify(new NewSubscriberNotification($user));
         }
 
-        return response()->json(['message' => 'Iscritto al canale.']);
+        return response()->json(['message' => 'Iscritto al canale.'], 200);
     }
 
     public function unsubscribe(Channel $channel)

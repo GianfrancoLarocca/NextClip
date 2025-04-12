@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Video;
 use Illuminate\Http\Request;
+use App\Notifications\NewLikeNotification;
 
 class LikeController extends Controller
 {
@@ -27,6 +28,11 @@ class LikeController extends Controller
 
         // Altrimenti aggiunge il like
         $video->likes()->attach($user->id);
+
+        // Invia una notifica solo se non è il proprietario del video
+        if ($video->channel->user_id !== $user->id) {
+            $video->channel->user->notify(new NewLikeNotification($video));
+        }
 
         return response()->json([
             'liked' => true,

@@ -83,5 +83,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('playlists', PlaylistController::class)->scoped([
         'playlist' => 'slug',
     ]);    
+
+    Route::get('/playlists/{playlist}/videos', [\App\Http\Controllers\Api\PlaylistVideoController::class, 'index']);
+    Route::post('/playlists/{playlist}/videos/{video}', [\App\Http\Controllers\Api\PlaylistVideoController::class, 'store']);
+    Route::delete('/playlists/{playlist}/videos/{video}', [\App\Http\Controllers\Api\PlaylistVideoController::class, 'destroy']);
     
 });

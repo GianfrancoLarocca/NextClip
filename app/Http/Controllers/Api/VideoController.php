@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\VideoResource;
 use App\Models\Video;
+use App\Models\VideoHistory;
 use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -44,11 +45,18 @@ class VideoController extends Controller
         if (!Cache::has($cacheKey)) {
             $video->increment('views');
 
-            // Salva nel cache per 30 minuti
+            // Salva nel cache per 5 minuti
             Cache::put($cacheKey, true, now()->addMinutes(5));
         }
 
-        $video->load('channel', 'likes'); // Include dati del canale
+        $video->load('channel', 'likes');
+
+        if ($user) {
+            VideoHistory::updateOrCreate(
+                ['user_id' => $user->id, 'video_id' => $video->id],
+                ['updated_at' => now()]
+            );
+        }
 
         // return response()->json($video);
         return new VideoResource($video);

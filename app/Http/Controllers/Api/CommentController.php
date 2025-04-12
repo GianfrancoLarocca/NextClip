@@ -9,6 +9,7 @@ use App\Models\Comment;
 use App\Models\Video;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Notifications\NewCommentNotification;
 
 class CommentController extends Controller
 {
@@ -38,6 +39,8 @@ class CommentController extends Controller
             'user_id' => Auth::id(),
             'body' => $request->input('body'),
         ]);
+
+        $video->channel->user->notify(new NewCommentNotification($comment));
 
         // return response()->json($comment, Response::HTTP_CREATED);
         return new CommentResource($comment->load('user'));

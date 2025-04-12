@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\PlaylistController;
 use App\Http\Controllers\Api\PlaylistVideoController;
 use App\Http\Controllers\Api\PublicPlaylistController;
+use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\VideoController;
 use App\Http\Controllers\Api\VideoHistoryController;
@@ -94,6 +95,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/history', [VideoHistoryController::class, 'index']);
     Route::post('/history/{video:slug}', [VideoHistoryController::class, 'store']);
     Route::delete('/history/{video:slug}', [VideoHistoryController::class, 'destroy']);
+
+    Route::get('/search', [SearchController::class, 'index']);
     
 });
 

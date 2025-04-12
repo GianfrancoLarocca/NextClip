@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\ChannelVideoController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\VideoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -73,5 +74,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
         return response()->json(['message' => 'Notifica segnata come letta.']);
     });    
+
+    // Iscrizione/disiscrizione ai canali
+    Route::post('/channels/{channel:slug}/subscribe', [SubscriptionController::class, 'subscribe']);
+    Route::post('/channels/{channel:slug}/unsubscribe', [SubscriptionController::class, 'unsubscribe']);
     
 });

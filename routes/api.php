@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PlaylistVideoController;
 use App\Http\Controllers\Api\PublicPlaylistController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\VideoController;
 use App\Http\Controllers\Api\VideoHistoryController;
 use Illuminate\Http\Request;
@@ -97,6 +98,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/history/{video:slug}', [VideoHistoryController::class, 'destroy']);
 
     Route::get('/search', [SearchController::class, 'index']);
+
+    Route::apiResource('tags', TagController::class);
     
 });
 

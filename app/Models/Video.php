@@ -41,6 +41,11 @@ class Video extends Model
         return $this->belongsToMany(User::class, 'video_user_likes')->withTimestamps();
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
     /**
      * Genera uno slug unico in automatico
      */

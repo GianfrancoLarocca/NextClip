@@ -7,6 +7,7 @@ use App\Http\Resources\VideoResource;
 use App\Models\Video;
 use App\Models\VideoHistory;
 use Illuminate\Support\Facades\Cache;
+use Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class VideoController extends Controller
@@ -14,20 +15,19 @@ class VideoController extends Controller
     /**
      * Elenco dei video pubblici più recenti
      */
-    public function index()
+    public function index(Request $request)
     {
-        $videos = Video::with('channel')
-            ->where('visibility', 'public')
-            ->orderByDesc('published_at')
-            ->paginate(30);
+        $query = Video::where('visibility', 'public')
+            ->with('channel', 'tags')
+            ->latest();
 
-        // return response()->json($videos);
-        return VideoResource::collection(
-            Video::where('visibility', 'public')
-                ->with('channel')
-                ->latest()
-                ->paginate(120)
-        );        
+        if ($request->filled('tag')) {
+            $query->whereHas('tags', function ($q) use ($request) {
+                $q->where('slug', $request->tag);
+            });
+        }
+
+        return VideoResource::collection($query->paginate(30));
     }
 
     public function show(Video $video)

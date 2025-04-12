@@ -23,6 +23,8 @@ class VideoUploadController extends Controller
             'visibility' => 'required|in:public,private,unlisted',
             'video' => 'required|file|mimetypes:video/mp4,video/avi,video/mpeg|max:51200',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
         ]);        
 
         $user = $request->user();
@@ -56,7 +58,9 @@ class VideoUploadController extends Controller
             'duration' => $duration,
             'published_at' => now(),
             'views' => 0,
-        ]);          
+        ]);  
+        
+        $video->tags()->sync($request->input('tags', []));
 
         return (new VideoResource($video->load('channel')))
         ->additional(['message' => 'Video caricato con successo.']);

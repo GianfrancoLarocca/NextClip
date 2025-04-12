@@ -36,6 +36,13 @@ class VideoResource extends JsonResource
             ],
             'liked' => $user ? $this->likes->contains('id', $user->id) : false,
             'likes_count' => $this->likes->count(),
+            'tags' => $this->tags->map(function ($tag) {
+                return [
+                    'id' => $tag->id,
+                    'name' => $tag->name,
+                    'slug' => $tag->slug,
+                ];
+            }),
         ];
     }
 }

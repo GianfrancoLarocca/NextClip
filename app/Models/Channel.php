@@ -38,6 +38,11 @@ class Channel extends Model
         return $this->belongsToMany(User::class, 'channel_user_subscriptions')->withTimestamps();
     }
 
+    public function getSubscribersCountAttribute()
+    {
+        return $this->subscribers()->count();
+    }
+
     /**
      * Generazione automatica dello slug al momento della creazione o aggiornamento
      */

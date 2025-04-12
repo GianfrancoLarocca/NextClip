@@ -12,12 +12,17 @@ class ChannelResource extends JsonResource
      */
     public function toArray($request): array
     {
+
+        $user = $request->user();
+        
         return [
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
             'avatar' => $this->avatar ? asset('storage/' . $this->avatar) : null,
             'banner' => $this->banner ? asset('storage/' . $this->banner) : null,
+            'subscribers_count' => $this->subscribers()->count(),
+            'is_subscribed' => $user ? $this->subscribers->contains($user->id) : false,
         ];
     }
 }

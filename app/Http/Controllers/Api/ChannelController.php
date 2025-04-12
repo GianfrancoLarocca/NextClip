@@ -16,9 +16,11 @@ class ChannelController extends Controller
     /**
      * Mostra tutti i canali dell'utente autenticato
      */
-    public function index()
+    public function index(Channel $channel)
     {
-        return Auth::user()->channels()->get();
+        $channel->load('subscribers');
+
+        return new \App\Http\Resources\ChannelResource($channel);
     }
 
     /**

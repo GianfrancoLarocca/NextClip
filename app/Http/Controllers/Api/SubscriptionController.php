@@ -7,12 +7,13 @@ use App\Models\Channel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\NewSubscriberNotification;
+use App\Models\User;
 
 class SubscriptionController extends Controller
 {
     public function subscribe(Channel $channel)
     {
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
 
         // Evita iscrizione al proprio canale
         if ($channel->user_id === $user->id) {

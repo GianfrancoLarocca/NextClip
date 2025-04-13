@@ -22,6 +22,11 @@ use Illuminate\Support\Facades\Hash;
 
 require __DIR__.'/auth.php';
 
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/admin/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index']);
+    Route::delete('/admin/reports/{report}', [\App\Http\Controllers\Admin\ReportController::class, 'destroy']);
+});
+
 Route::post('/token', function (Request $request) {
     $request->validate([
         'email' => 'required|email',

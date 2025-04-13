@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\VideoController;
 use App\Http\Controllers\Api\VideoHistoryController;
 use App\Http\Controllers\Api\SavedVideoController;
 use App\Http\Controllers\Api\VideoUploadController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -51,73 +52,95 @@ Route::post('/token', function (Request $request) {
 
 // Rotte protette da token
 Route::middleware('auth:sanctum')->group(function () {
-    // Info utente
-    Route::get('/user', function (Request $request) {
-        return $request->user();
+
+    // Email Verification Notice
+    Route::get('/email/verify', function () {
+        return response()->json(['message' => 'Verifica la tua email.']);
+    })->name('verification.notice');
+
+    // Email Verification Handler
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+
+        return response()->json(['message' => 'Email verificata con successo.']);
+    })->middleware(['signed'])->name('verification.verify');
+
+    // Resend verification
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Email di verifica inviata.']);
+    })->middleware(['throttle:6,1'])->name('verification.send');
+
+    Route::middleware('verified')->group(function () {
+
+        // Info utente
+        Route::get('/user', function (Request $request) {
+            return $request->user();
+        });
+    
+        // CRUD canali
+        Route::apiResource('channels', ChannelController::class)->scoped([
+            'channel' => 'slug',
+        ]);
+    
+        // Video annidati dentro canali
+        Route::apiResource('channels.videos', ChannelVideoController::class)->scoped([
+            'channel' => 'slug',
+            'video' => 'slug',
+        ]);
+    
+        Route::post('/videos/upload', [VideoUploadController::class, 'store']);
+    
+        Route::get('/videos/{video:slug}/comments', [CommentController::class, 'index']);
+        Route::post('/videos/{video:slug}/comments', [CommentController::class, 'store']);
+        Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
+    
+        Route::post('/videos/{video:slug}/like', [LikeController::class, 'toggle']);
+        
+        Route::get('/videos', [VideoController::class, 'index']);
+        Route::get('/videos/{video:slug}', [VideoController::class, 'show']);
+    
+        Route::get('/notifications', function () {
+            return request()->user()->unreadNotifications()->paginate(20);
+        });
+    
+        Route::post('/notifications/{id}/read', function ($id) {
+            $notification = request()->user()->notifications()->findOrFail($id);
+            $notification->markAsRead();
+        
+            return response()->json(['message' => 'Notifica segnata come letta.']);
+        });    
+    
+        // Iscrizione/disiscrizione ai canali
+        Route::post('/channels/{channel:slug}/subscribe', [SubscriptionController::class, 'subscribe']);
+        Route::post('/channels/{channel:slug}/unsubscribe', [SubscriptionController::class, 'unsubscribe']);
+    
+        Route::apiResource('playlists', PlaylistController::class)->scoped([
+            'playlist' => 'slug',
+        ]);    
+    
+        Route::get('/playlists/{playlist}/videos', [PlaylistVideoController::class, 'index']);
+        Route::post('/playlists/{playlist}/videos/{video}', [PlaylistVideoController::class, 'store']);
+        Route::delete('/playlists/{playlist}/videos/{video}', [PlaylistVideoController::class, 'destroy']);
+    
+        Route::get('/history', [VideoHistoryController::class, 'index']);
+        Route::post('/history/{video:slug}', [VideoHistoryController::class, 'store']);
+        Route::delete('/history/{video:slug}', [VideoHistoryController::class, 'destroy']);
+    
+        Route::get('/search', [SearchController::class, 'index']);
+    
+        Route::apiResource('tags', TagController::class);
+    
+        Route::get('/videso/{video:slug}/related', [VideoController::class, 'related']);
+    
+        Route::post('/videos/{video:slug}/report', [ReportController::class, 'store']);
+    
+        Route::get('/saved-videos', [SavedVideoController::class, 'index']);
+        Route::post('/saved-videos/{video:slug}', [SavedVideoController::class, 'store']);
+        Route::delete('/saved-videos/{video:slug}', [SavedVideoController::class, 'destroy']);
     });
-
-    // CRUD canali
-    Route::apiResource('channels', ChannelController::class)->scoped([
-        'channel' => 'slug',
-    ]);
-
-    // Video annidati dentro canali
-    Route::apiResource('channels.videos', ChannelVideoController::class)->scoped([
-        'channel' => 'slug',
-        'video' => 'slug',
-    ]);
-
-    Route::post('/videos/upload', [VideoUploadController::class, 'store']);
-
-    Route::get('/videos/{video:slug}/comments', [CommentController::class, 'index']);
-    Route::post('/videos/{video:slug}/comments', [CommentController::class, 'store']);
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
-
-    Route::post('/videos/{video:slug}/like', [LikeController::class, 'toggle']);
     
-    Route::get('/videos', [VideoController::class, 'index']);
-    Route::get('/videos/{video:slug}', [VideoController::class, 'show']);
-
-    Route::get('/notifications', function () {
-        return request()->user()->unreadNotifications()->paginate(20);
-    });
-
-    Route::post('/notifications/{id}/read', function ($id) {
-        $notification = request()->user()->notifications()->findOrFail($id);
-        $notification->markAsRead();
-    
-        return response()->json(['message' => 'Notifica segnata come letta.']);
-    });    
-
-    // Iscrizione/disiscrizione ai canali
-    Route::post('/channels/{channel:slug}/subscribe', [SubscriptionController::class, 'subscribe']);
-    Route::post('/channels/{channel:slug}/unsubscribe', [SubscriptionController::class, 'unsubscribe']);
-
-    Route::apiResource('playlists', PlaylistController::class)->scoped([
-        'playlist' => 'slug',
-    ]);    
-
-    Route::get('/playlists/{playlist}/videos', [PlaylistVideoController::class, 'index']);
-    Route::post('/playlists/{playlist}/videos/{video}', [PlaylistVideoController::class, 'store']);
-    Route::delete('/playlists/{playlist}/videos/{video}', [PlaylistVideoController::class, 'destroy']);
-
-    Route::get('/history', [VideoHistoryController::class, 'index']);
-    Route::post('/history/{video:slug}', [VideoHistoryController::class, 'store']);
-    Route::delete('/history/{video:slug}', [VideoHistoryController::class, 'destroy']);
-
-    Route::get('/search', [SearchController::class, 'index']);
-
-    Route::apiResource('tags', TagController::class);
-
-    Route::get('/videso/{video:slug}/related', [VideoController::class, 'related']);
-
-    Route::post('/videos/{video:slug}/report', [ReportController::class, 'store']);
-
-    Route::get('/saved-videos', [SavedVideoController::class, 'index']);
-    Route::post('/saved-videos/{video:slug}', [SavedVideoController::class, 'store']);
-    Route::delete('/saved-videos/{video:slug}', [SavedVideoController::class, 'destroy']);
-    
+    Route::get('/playlists', [PublicPlaylistController::class, 'index']);
+    Route::get('/playlists/{playlist}', [PublicPlaylistController::class, 'show']);
 });
-
-Route::get('/playlists', [PublicPlaylistController::class, 'index']);
-Route::get('/playlists/{playlist}', [PublicPlaylistController::class, 'show']);

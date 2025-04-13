@@ -21,9 +21,13 @@ class CommentController extends Controller
      */
     public function index(Video $video)
     {
-        return response()->json(
-            $video->comments()->latest()->paginate(20)
-        );
+        $comments = $video->comments()
+            ->whereNull('parent_id')
+            ->with(['user', 'replies.user'])
+            ->latest()
+            ->get();
+
+        return CommentResource::collection($comments);
     }
 
     /**
@@ -33,14 +37,18 @@ class CommentController extends Controller
     {
         $request->validate([
             'body' => 'required|string|max:1000',
+            'parent_id' => 'nullable|exists:comments,id',
         ]);
 
         $comment = $video->comments()->create([
             'user_id' => Auth::id(),
             'body' => $request->input('body'),
+            'parent_id' => $request->input('parent_id'),
         ]);
 
-        $video->channel->user->notify(new NewCommentNotification($comment));
+        if (!$comment->parent_id) {
+            $video->channel->user->notify(new NewCommentNotification($comment));
+        }
 
         // return response()->json($comment, Response::HTTP_CREATED);
         return new CommentResource($comment->load('user'));

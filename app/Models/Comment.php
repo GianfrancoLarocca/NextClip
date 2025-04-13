@@ -26,4 +26,14 @@ class Comment extends Model
     {
         return $this->belongsTo(Video::class);
     }
+
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id')->latest();
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
+    }
 }

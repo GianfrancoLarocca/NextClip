@@ -21,6 +21,7 @@ class CommentResource extends JsonResource
                 'name' => $this->user->name,
                 'avatar' => $this->user->avatar ?? null,
             ],
+            'replies' => CommentResource::collection($this->whenLoaded('replies')),
         ];
     }
 }

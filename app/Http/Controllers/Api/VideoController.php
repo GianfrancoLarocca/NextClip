@@ -12,9 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VideoController extends Controller
 {
-    /**
-     * Elenco dei video pubblici più recenti
-     */
+
     public function index(Request $request)
     {
         $query = Video::where('visibility', 'public')
@@ -32,7 +30,6 @@ class VideoController extends Controller
 
     public function show(Video $video)
     {
-        // Visibilità pubblica o non in elenco
         if (!in_array($video->visibility, ['public', 'unlisted'])) {
             return response()->json(['message' => 'Video not available'], Response::HTTP_FORBIDDEN);
         }
@@ -41,11 +38,9 @@ class VideoController extends Controller
         $viewerId = $user ? 'user_' . $user->id : 'ip_' . request()->ip();
         $cacheKey = "video_viewed_{$video->id}_{$viewerId}";
 
-        // Se non è stato visto di recente, incrementa views
         if (!Cache::has($cacheKey)) {
             $video->increment('views');
 
-            // Salva nel cache per 5 minuti
             Cache::put($cacheKey, true, now()->addMinutes(5));
         }
 
@@ -58,26 +53,32 @@ class VideoController extends Controller
             );
         }
 
-        // return response()->json($video);
         return new VideoResource($video);
     }
 
     public function related(Video $video)
     {
-        $query = Video::where('visibility', 'public')
-            ->where('id', '!=', $video->id)
-            ->with('channel', 'tags')
-            ->when($video->tags->count(), function ($q) use ($video) {
-                $q->whereHas('tags', function ($tagQuery) use ($video) {
-                    $tagQuery->whereIn('tags.id', $video->tags->pluck('id'));
-                });
+        $relatedByTags = Video::where('id', '!=', $video->id)
+            ->where('visibility', 'public')
+            ->whereHas('tags', function ($query) use ($video) {
+                $query->whereIn('tags.id', $video->tags->pluck('id'));
             })
-            ->orderByDesc('published_at')
-            ->limit(10);
+            ->with('channel')
+            ->latest()
+            ->take(10)
+            ->get();
 
-        $relatedVideos = $query->get();
+        if ($relatedByTags->isEmpty()) {
+            $relatedByTags = Video::where('id', '!=', $video->id)
+                ->where('channel_id', $video->channel_id)
+                ->where('visibility', 'public')
+                ->with('channel')
+                ->latest()
+                ->take(10)
+                ->get();
+        }
 
-        return VideoResource::collection($relatedVideos);
+        return VideoResource::collection($relatedByTags);
     }
 
 }

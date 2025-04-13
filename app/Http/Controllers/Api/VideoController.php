@@ -15,6 +15,8 @@ class VideoController extends Controller
 
     public function index(Request $request)
     {
+        \Log::debug('User from request:', ['user' => request()->user()]);
+
         $query = Video::where('visibility', 'public')
             ->with('channel', 'tags')
             ->latest();

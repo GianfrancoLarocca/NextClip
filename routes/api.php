@@ -71,7 +71,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         return response()->json(['message' => 'Email di verifica inviata.']);
     })->middleware(['throttle:6,1'])->name('verification.send');
-
+    
+    Route::get('/videos', [VideoController::class, 'index']);
+    
     Route::middleware('verified')->group(function () {
 
         // Info utente
@@ -98,7 +100,6 @@ Route::middleware('auth:sanctum')->group(function () {
     
         Route::post('/videos/{video:slug}/like', [LikeController::class, 'toggle']);
         
-        Route::get('/videos', [VideoController::class, 'index']);
         Route::get('/videos/{video:slug}', [VideoController::class, 'show']);
     
         Route::get('/notifications', function () {

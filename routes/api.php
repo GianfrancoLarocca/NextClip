@@ -100,6 +100,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/search', [SearchController::class, 'index']);
 
     Route::apiResource('tags', TagController::class);
+
+    Route::get('/videso/{video:slug}/related', [VideoController::class, 'related']);
     
 });
 

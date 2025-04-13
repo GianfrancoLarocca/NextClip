@@ -61,4 +61,23 @@ class VideoController extends Controller
         // return response()->json($video);
         return new VideoResource($video);
     }
+
+    public function related(Video $video)
+    {
+        $query = Video::where('visibility', 'public')
+            ->where('id', '!=', $video->id)
+            ->with('channel', 'tags')
+            ->when($video->tags->count(), function ($q) use ($video) {
+                $q->whereHas('tags', function ($tagQuery) use ($video) {
+                    $tagQuery->whereIn('tags.id', $video->tags->pluck('id'));
+                });
+            })
+            ->orderByDesc('published_at')
+            ->limit(10);
+
+        $relatedVideos = $query->get();
+
+        return VideoResource::collection($relatedVideos);
+    }
+
 }

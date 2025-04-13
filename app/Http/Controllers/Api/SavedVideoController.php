@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\VideoResource;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,7 @@ class SavedVideoController extends Controller
             ->latest('saved_videos.created_at')
             ->paginate(20);
 
-        return response()->json($videos);
+        return VideoResource::collection($videos);
     }
 
     /**

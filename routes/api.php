@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\VideoController;
 use App\Http\Controllers\Api\VideoHistoryController;
+use App\Http\Controllers\Api\SavedVideoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -60,7 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'video' => 'slug',
     ]);
 
-    Route::post('/videos/upload', [\App\Http\Controllers\Api\VideoUploadController::class, 'store']);
+    Route::post('/videos/upload', [VideoUploadController::class, 'store']);
 
     Route::get('/videos/{video:slug}/comments', [CommentController::class, 'index']);
     Route::post('/videos/{video:slug}/comments', [CommentController::class, 'store']);
@@ -105,6 +106,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/videso/{video:slug}/related', [VideoController::class, 'related']);
 
     Route::post('/videos/{video:slug}/report', [ReportController::class, 'store']);
+
+    Route::get('/saved-videos', [SavedVideoController::class, 'index']);
+    Route::post('/saved-videos/{video:slug}', [SavedVideoController::class, 'store']);
+    Route::delete('/saved-videos/{video:slug}', [SavedVideoController::class, 'destroy']);
     
 });
 

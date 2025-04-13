@@ -43,6 +43,7 @@ class VideoResource extends JsonResource
                     'slug' => $tag->slug,
                 ];
             }),
+            'saved' => $user ? $this->savedBy->contains('id', $user->id) : false,
         ];
     }
 }

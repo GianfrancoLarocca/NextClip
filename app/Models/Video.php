@@ -46,6 +46,11 @@ class Video extends Model
         return $this->belongsToMany(Tag::class);
     }
 
+    public function savedBy()
+    {
+        return $this->belongsToMany(User::class, 'saved_videos')->withTimestamps();
+    }
+
     /**
      * Genera uno slug unico in automatico
      */

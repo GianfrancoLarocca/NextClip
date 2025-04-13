@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\PlaylistController;
 use App\Http\Controllers\Api\PlaylistVideoController;
 use App\Http\Controllers\Api\PublicPlaylistController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TagController;
@@ -102,6 +103,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('tags', TagController::class);
 
     Route::get('/videso/{video:slug}/related', [VideoController::class, 'related']);
+
+    Route::post('/videos/{video:slug}/report', [ReportController::class, 'store']);
     
 });
 

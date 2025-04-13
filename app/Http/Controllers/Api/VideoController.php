@@ -7,7 +7,7 @@ use App\Http\Resources\VideoResource;
 use App\Models\Video;
 use App\Models\VideoHistory;
 use Illuminate\Support\Facades\Cache;
-use Request;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class VideoController extends Controller

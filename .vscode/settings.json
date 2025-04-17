@@ -37,5 +37,9 @@
         ["class:\\s*'([^']*)", 1],
         ["class:\\s*\"([^\"]*)", 1]
     ],
-    "tailwindCSS.files.exclude": ["**/vendor/**/*"]
+    "tailwindCSS.files.exclude": ["**/vendor/**/*"],
+    "tailwindCSS.includeLanguages": {
+        "vue": "html"
+    },
+    "css.lint.unknownAtRules": "ignore"
 }

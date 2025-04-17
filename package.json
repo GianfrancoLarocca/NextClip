@@ -8,7 +8,8 @@
     },
     "scripts": {
         "test": "echo \"No tests yet\"",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "frontend:dev": "cd nextclip-frontend && npm run dev"
     },
     "keywords": [],
     "author": "",
